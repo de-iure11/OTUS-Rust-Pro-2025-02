@@ -1,6 +1,6 @@
 //! Пример использования библиотеки для реализации умного дома
 
-use smart_house::device::{SmartDevice, Socket, TemperatureScale, Thermometer};
+use smart_house::device::{SmartDevice, SmartDeviceControl, Socket, Thermo};
 use smart_house::house::{Room, SmartHouse};
 
 fn main() {
@@ -10,15 +10,15 @@ fn main() {
             Room::new(
                 "Гостинная",
                 vec![
-                    Socket::new("розетка №1").into(),
-                    Thermometer::new("термометр №1", None).into(),
+                    Socket::new("Розетка-1").into(),
+                    Thermo::new("Термометр-1").into(),
                 ],
             ),
             Room::new(
                 "Детская",
                 vec![
-                    Socket::new("розетка №2").into(),
-                    Thermometer::new("термометр №2", Some(TemperatureScale::Fahrenheit)).into(),
+                    Socket::new("Розетка-2").into(),
+                    Thermo::new("Термометр-2").into(),
                 ],
             ),
         ],
