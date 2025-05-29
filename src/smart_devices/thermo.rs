@@ -1,8 +1,11 @@
-use super::{SmartDeviceControl, error::Result};
+use crate::smart_house::Report;
+
+use super::{ControllableDevice, Result};
 use rand::Rng;
 
+#[derive(Debug)]
 pub struct Thermo {
-    name: String,
+    pub name: String,
     value: f32,
     enabled: bool,
 }
@@ -19,7 +22,11 @@ impl Thermo {
     }
 }
 
-impl SmartDeviceControl for Thermo {
+impl ControllableDevice for Thermo {
+    fn get_name(&self) -> &String {
+        &self.name
+    }
+
     fn get_value(&self) -> f32 {
         self.value
     }
@@ -37,15 +44,14 @@ impl SmartDeviceControl for Thermo {
         Ok(())
     }
 
-    fn is_enabled(&self) -> bool {
+    fn is_on(&self) -> bool {
         self.enabled
     }
 }
 
-impl core::fmt::Display for Thermo {
-    fn fmt(&self, fmt: &mut core::fmt::Formatter) -> core::result::Result<(), core::fmt::Error> {
-        let t = self.get_value();
-        write!(fmt, "Tермометр (name: {}, value: {:.2}°C)", self.name, t)
+impl Report for Thermo {
+    fn get_report(&self) -> String {
+        format!("Thermo (name: {}, value: {:.2}°C)", self.name, self.value)
     }
 }
 
@@ -71,7 +77,7 @@ mod tests {
         };
 
         assert_eq!(24.60, thermo1.get_value());
-        thermo1.turn_off();
+        let _ = thermo1.turn_off();
         assert_eq!(0.00, thermo1.get_value());
         Ok(())
     }
@@ -84,8 +90,8 @@ mod tests {
             enabled: true,
         };
 
-        let output = format!("{}", thermo);
-        let expected_output = "Tермометр (name: NewThermometer, value: 24.60°C)";
+        let output = thermo.get_report();
+        let expected_output = "Thermo (name: NewThermometer, value: 24.60°C)";
 
         assert_eq!(output, expected_output);
     }

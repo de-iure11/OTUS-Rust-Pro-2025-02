@@ -1,9 +1,11 @@
-use super::SmartDeviceControl;
-use super::error::Result;
+use crate::smart_house::Report;
+
+use super::{ControllableDevice, Result};
 use rand::Rng;
 
+#[derive(Debug)]
 pub struct Socket {
-    name: String,
+    pub name: String,
     amperes: f32,
     volts: f32,
     enabled: bool,
@@ -21,7 +23,11 @@ impl Socket {
     }
 }
 
-impl SmartDeviceControl for Socket {
+impl ControllableDevice for Socket {
+    fn get_name(&self) -> &String {
+        &self.name
+    }
+
     fn get_value(&self) -> f32 {
         self.amperes * self.volts
     }
@@ -41,17 +47,15 @@ impl SmartDeviceControl for Socket {
         Ok(())
     }
 
-    fn is_enabled(&self) -> bool {
+    fn is_on(&self) -> bool {
         self.enabled
     }
 }
 
-/// Реализация типажа Display для Thermometer для вывода вывода отчета.
-impl core::fmt::Display for Socket {
-    fn fmt(&self, fmt: &mut core::fmt::Formatter) -> core::result::Result<(), core::fmt::Error> {
-        write!(
-            fmt,
-            "Pозетка (name: {}, value: {:.2}A, {:.2}V, {:.2}W)",
+impl Report for Socket {
+    fn get_report(&self) -> String {
+        format!(
+            "Socket (name: {}, value: {:.2}A, {:.2}V, {:.2}W)",
             self.name,
             self.amperes,
             self.volts,
@@ -95,7 +99,7 @@ mod tests {
 
         let power = socket.get_value();
         assert_eq!(power, 1100.00);
-        socket.turn_off();
+        let _ = socket.turn_off();
         let power = socket.get_value();
         assert_eq!(power, 0.00);
         Ok(())
@@ -110,8 +114,8 @@ mod tests {
             volts: 220.0,
         };
 
-        let output = format!("{}", socket);
-        let expected_output = "Pозетка (name: NewSocket, value: 5.00A, 220.00V, 1100.00W)";
+        let output = socket.get_report();
+        let expected_output = "Socket (name: NewSocket, value: 5.00A, 220.00V, 1100.00W)";
         assert_eq!(output, expected_output);
         Ok(())
     }

@@ -1,39 +1,41 @@
-//! Пример использования библиотеки для реализации умного дома
-
-use smart_house::device::{SmartDevice, SmartDeviceControl, Socket, Thermo};
-use smart_house::house::{Room, SmartHouse};
+use smart_house::smart_devices::{Socket, Thermo};
+use smart_house::smart_house::SmartHouse;
+use smart_house::utils::print_report;
+use smart_house::{create_room, room::Room};
 
 fn main() {
-    let mut my_smart_house = SmartHouse::new(
-        "Дом в Ромашково",
-        vec![
-            Room::new(
-                "Гостинная",
-                vec![
-                    Socket::new("Розетка-1").into(),
-                    Thermo::new("Термометр-1").into(),
-                ],
-            ),
-            Room::new(
-                "Детская",
-                vec![
-                    Socket::new("Розетка-2").into(),
-                    Thermo::new("Термометр-2").into(),
-                ],
-            ),
-        ],
+    let mut my_smart_house = SmartHouse::new("Дом в Ромашково");
+
+    let living_room = create_room!(
+        "LivingRoom",
+        ("socket1", Socket::new("socket1")),
+        ("therm1", Thermo::new("therm1"))
     );
 
-    my_smart_house.print_rooms();
+    let childrens_room = create_room!(
+        "ChildrensRoom",
+        ("socket2", Socket::new("socket2")),
+        ("therm2", Thermo::new("therm2"))
+    );
 
-    if let Some(SmartDevice::Socket(socket)) = my_smart_house
-        .get_mut_room(1)
-        .and_then(|room| room.get_mut_device(0))
-    {
-        socket.turn_off();
-        println!("{} - выключена\n", socket);
+    let _ = my_smart_house.add_room(living_room);
+    let _ = my_smart_house.add_room(childrens_room);
+
+    println!("Общий отчет:");
+    print_report(&my_smart_house);
+
+    let some_device1 = my_smart_house.get_smart_device("LivingRoom", "socket1");
+
+    print!("Отчет об устройстве: ");
+    match some_device1 {
+        Ok(device) => print_report(device),
+        Err(err) => println!("{}", err),
     }
 
-    println!("Обновленный отчет.");
-    my_smart_house.print_rooms();
+    let some_device2 = my_smart_house.get_smart_device("LivingRoom", "socket3");
+    print!("Ошибка получения устройства: ");
+    match some_device2 {
+        Ok(device) => print_report(device),
+        Err(err) => println!("{}", err),
+    }
 }

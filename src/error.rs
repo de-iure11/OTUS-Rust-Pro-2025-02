@@ -1,9 +1,11 @@
 pub type Result<T> = core::result::Result<T, Error>;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Error {
-    FailLoadDataFromDevice(String), // ошибка загрузки данных с устройства
-    FailConnectToDevice(String),    // ошибка подключения к устройству
+    DeviceAlreadyExists(String),
+    DeviceDoesNotExist(String),
+    RoomAlreadyExists(String),
+    RoomDoesNotExist(String),
 }
 
 impl std::error::Error for Error {}
