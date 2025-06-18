@@ -1,7 +1,7 @@
-use smart_house::smart_devices::{Socket, Thermo};
-use smart_house::smart_house::SmartHouse;
-use smart_house::utils::print_report;
-use smart_house::{create_room, room::Room};
+use smart_home_lib::smart_devices::{Socket, Thermo};
+use smart_home_lib::smart_house::SmartHouse;
+use smart_home_lib::utils::print_report;
+use smart_home_lib::{create_room, room::Room};
 
 fn main() {
     let mut my_smart_house = SmartHouse::new("Дом в Ромашково");
