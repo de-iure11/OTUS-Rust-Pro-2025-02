@@ -6,11 +6,11 @@ use tokio::{
 };
 
 /// Сервер - иммитатор умной розетки.
-pub struct SoketServer {
+pub struct SimpleServer {
     server: TcpListener,
 }
 
-impl SoketServer {
+impl SimpleServer {
     /// Закрепляем сервер на сокете.
     pub async fn bind<Addrs: ToSocketAddrs>(addrs: Addrs) -> io::Result<Self> {
         let server = TcpListener::bind(addrs).await?;
@@ -18,18 +18,22 @@ impl SoketServer {
     }
 
     /// Принимаем входящее соединение.
-    pub async fn accept(&self) -> Result<SoketConnection> {
+    pub async fn accept(&self) -> Result<Connection> {
         let (stream, _) = self.server.accept().await?;
-        Ok(SoketConnection { stream })
+        Ok(Connection { stream })
+    }
+
+    pub async fn local_addr(&self) -> io::Result<SocketAddr> {
+        self.server.local_addr()
     }
 }
 
 /// Соединение с клиентом и обработка запросов.
-pub struct SoketConnection {
+pub struct Connection {
     stream: TcpStream,
 }
 
-impl SoketConnection {
+impl Connection {
     /// Обработка запроса асинхронно (неблокирующее сетевое взаимодействие).
     pub async fn process_request_async<F, Fut>(&mut self, handler: F) -> Result<()>
     where

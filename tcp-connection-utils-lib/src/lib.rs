@@ -1,6 +1,5 @@
-use std::io::{Read, Write};
-
 use crate::error::{Error, Result};
+use std::io::{Read, Write};
 use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
 
 pub mod client;
@@ -8,7 +7,11 @@ pub mod error;
 pub mod server;
 
 /// Синхронно отправляет четыре байта `data.len()`, а потом сами данные.
-pub fn send_string<Data: AsRef<str>, Writer: Write>(data: Data, mut writer: Writer) -> Result<()> {
+pub fn send_string<D, W>(data: D, mut writer: W) -> Result<()>
+where
+    D: AsRef<str>,
+    W: Write,
+{
     let bytes = data.as_ref().as_bytes();
     let len = bytes.len() as u32;
     let len_bytes = len.to_be_bytes();
@@ -32,7 +35,10 @@ where
 }
 
 /// Синхронно читает четыре байта длины, а потом сами данные.
-fn recv_string<Reader: Read>(mut reader: Reader) -> Result<String> {
+pub fn recv_string<R: Read>(mut reader: R) -> Result<String>
+where
+    R: Read,
+{
     let mut buf = [0; 4];
     reader.read_exact(&mut buf)?;
     let len = u32::from_be_bytes(buf);

@@ -2,11 +2,11 @@ use crate::error::Result;
 use std::net::{TcpStream, ToSocketAddrs};
 
 /// Клиент STP.
-pub struct SocketClient {
+pub struct SimpleClient {
     stream: TcpStream,
 }
 
-impl SocketClient {
+impl SimpleClient {
     /// Пытаемся подключится к серверу
     pub fn connect<Addrs>(addrs: Addrs) -> Result<Self>
     where

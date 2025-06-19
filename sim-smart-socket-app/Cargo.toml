@@ -1,7 +1,0 @@
-[package]
-name = "sim-smart-socket-app"
-version = "0.1.0"
-edition = "2024"
-
-[dependencies]
-stp = { path = "../tcp-smart-socket-lib" }
