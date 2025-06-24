@@ -5,3 +5,10 @@ edition = "2024"
 
 [dependencies]
 rand = "0.8"
+connection-lib = { path = "../connection-lib" }
+tokio = { version = "1.45.1", features = ["full"] }
+# tcp-smart-socket-lib = { path = "../tcp-smart-socket-lib" }
+
+
+[dev-dependencies]
+regex = "1.0"

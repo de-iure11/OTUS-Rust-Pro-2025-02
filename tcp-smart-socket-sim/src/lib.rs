@@ -3,14 +3,14 @@ pub mod smart_socket;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
-use tcp_connection_utils_lib::server::Connection;
+use connection_lib::tcp_server::Connection;
 
 pub async fn process_connection(
     mut connection: Connection,
     socket: Arc<RwLock<smart_socket::SmartSocket>>,
 ) {
     println!(
-        "🚦 process_connection стартовал {}",
+        "🚦 Установлено соединение с клиентом {}",
         connection.peer_addr().unwrap()
     );
     loop {

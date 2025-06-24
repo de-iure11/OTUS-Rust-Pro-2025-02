@@ -3,6 +3,6 @@ resolver = "3"
 members = [
     "smart-home-lib",
     "smart-home-app",
-    "tcp-connection-utils-lib",
+    "connection-lib",
     "tcp-smart-socket-sim",
 ]

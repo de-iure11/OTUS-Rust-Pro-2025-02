@@ -1,7 +1,7 @@
 use clap::Parser;
 
+use connection_lib::tcp_server::SimpleServer;
 use std::sync::Arc;
-use tcp_connection_utils_lib::server::SimpleServer;
 use tcp_smart_socket_sim::{process_connection, smart_socket::SmartSocket};
 use tokio::sync::RwLock;
 

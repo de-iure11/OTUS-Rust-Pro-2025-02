@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-tcp-connection-utils-lib = { path = "../tcp-connection-utils-lib" }
+connection-lib = { path = "../connection-lib" }
 clap = { version = "4", features = ["derive"] }
 rand = "0.8"
 tokio = { version = "1.45.1", features = ["full"] }

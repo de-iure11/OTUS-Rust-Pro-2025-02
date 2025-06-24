@@ -2,9 +2,9 @@ use crate::error::{Error, Result};
 use std::io::{Read, Write};
 use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
 
-pub mod client;
 pub mod error;
-pub mod server;
+pub mod tcp_client;
+pub mod tcp_server;
 
 /// Синхронно отправляет четыре байта `data.len()`, а потом сами данные.
 pub fn send_string<D, W>(data: D, mut writer: W) -> Result<()>

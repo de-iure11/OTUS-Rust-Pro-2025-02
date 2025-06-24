@@ -6,6 +6,9 @@ pub enum Error {
     DeviceDoesNotExist(String),
     RoomAlreadyExists(String),
     RoomDoesNotExist(String),
+    FailToConnectDevice(String),
+    FailToSendRequest(String),
+    UnknownCommand(String),
 }
 
 impl std::error::Error for Error {}

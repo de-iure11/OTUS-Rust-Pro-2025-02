@@ -1,10 +1,10 @@
 // -----
 #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
 async fn test_process_connection_integration_ok() {
+    use connection_lib::tcp_server::SimpleServer;
+    use connection_lib::{recv_string, send_string};
     use std::net::TcpStream;
     use std::sync::Arc;
-    use tcp_connection_utils_lib::server::SimpleServer;
-    use tcp_connection_utils_lib::{recv_string, send_string};
     use tcp_smart_socket_sim::{process_connection, smart_socket::SmartSocket};
     use tokio::sync::{RwLock, mpsc};
     use tokio::time::{Duration, timeout};
