@@ -1,0 +1,12 @@
+[package]
+name = "udp-smart-thermometer-sim"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+connection-lib = { path = "../connection-lib" }
+clap = { version = "4", features = ["derive"] }
+tokio = { version = "1.45.1", features = ["full"] }
+anyhow = "1"
+toml = "0.8"
+serde = { version = "1", features = ["derive"] }

@@ -5,6 +5,8 @@ use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
 pub mod error;
 pub mod tcp_client;
 pub mod tcp_server;
+pub mod udp_receiver;
+pub mod udp_sender;
 
 /// Синхронно отправляет четыре байта `data.len()`, а потом сами данные.
 pub fn send_string<D, W>(data: D, mut writer: W) -> Result<()>

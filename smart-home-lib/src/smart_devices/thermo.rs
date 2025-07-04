@@ -1,98 +1,83 @@
-// use crate::smart_house::Report;
+use super::Result;
+use crate::{error::Error, smart_house::Report};
+use connection_lib::udp_receiver::UdpReceiver;
 
-// use super::{ControllableDevice, Result};
-// use rand::Rng;
+use std::sync::{Arc, Mutex};
 
-// #[derive(Debug)]
-// pub struct Thermo {
-//     pub name: String,
-//     value: f32,
-//     enabled: bool,
-// }
+#[derive(Debug)]
+pub struct Thermo {
+    name: String,
+    value: Arc<Mutex<f32>>,
+    thermometer: Option<UdpReceiver>,
+}
 
-// impl Thermo {
-//     pub fn new(name: &str) -> Self {
-//         let mut rng = rand::thread_rng();
+impl Thermo {
+    pub async fn new(name: &str) -> Result<Self> {
+        let addr = "127.0.0.1:8282";
+        let Ok(thermometer) = UdpReceiver::new(addr).await else {
+            return Err(Error::FailToConnectDevice(addr.to_string()));
+        };
 
-//         Thermo {
-//             name: name.to_string(),
-//             value: rng.gen_range(20.00..25.00),
-//             enabled: true,
-//         }
-//     }
-// }
+        Ok(Self {
+            name: name.to_string(),
+            value: Arc::new(Mutex::new(0.0_f32)),
+            thermometer: Some(thermometer),
+        })
+    }
+}
 
-// impl ControllableDevice for Thermo {
-//     fn get_name(&self) -> &String {
-//         &self.name
-//     }
+impl Thermo {
+    fn get_name(&self) -> &str {
+        &self.name
+    }
 
-//     fn get_value(&self) -> f32 {
-//         self.value
-//     }
+    fn get_value(&self) -> Option<String> {
+        let value = *self.value.lock();
+        Some(format!("{:.2}°C", value))
+    }
+}
 
-//     fn turn_on(&mut self) -> Result<()> {
-//         let mut rng = rand::thread_rng();
-//         self.enabled = true;
-//         self.value = rng.gen_range(20.00..25.00);
-//         Ok(())
-//     }
+impl Report for Thermo {
+    fn get_report(&self) -> String {
+        let value = self.get_value().unwrap_or("N/A".into());
+        format!("Thermometer (name: {}, value: {} °C)", self.name, value)
+    }
+}
 
-//     fn turn_off(&mut self) -> Result<()> {
-//         self.enabled = false;
-//         self.value = 0.0;
-//         Ok(())
-//     }
+#[cfg(test)]
+mod tests {
+    // use super::*;
+    // use connection_lib::udp_sender::UdpSender;
+    // use std::{net::SocketAddr, time::Duration};
+    // use tokio::time;
 
-//     fn is_on(&self) -> bool {
-//         self.enabled
-//     }
-// }
+    // #[tokio::test]
+    // async fn test_real_udp_communication() {
+    //     // 1. Запускаем термометр (слушает порт 8282)
+    //     let thermo = Thermo::new("test_thermo").await.unwrap();
 
-// impl Report for Thermo {
-//     fn get_report(&self) -> String {
-//         format!("Thermo (name: {}, value: {:.2}°C)", self.name, self.value)
-//     }
-// }
+    //     // 2. Запускаем имитатор (отправляет на порт 8282)
+    //     let sender = UdpSender::new("127.0.0.1:8282", 1).await.unwrap();
+    //     tokio::spawn(async move {
+    //         sender.run().await.unwrap();
+    //     });
 
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
+    //     // 3. Даем время на обмен данными
+    //     time::sleep(Duration::from_secs(3)).await;
 
-//     #[test]
-//     fn create_new_thermo_ok() -> Result<()> {
-//         let name_fx = "NewThermo";
-//         let thermo = Thermo::new(name_fx);
-//         assert_eq!(thermo.name, name_fx.to_string());
-//         assert!(thermo.enabled);
-//         Ok(())
-//     }
+    //     // 4. Проверяем, что термометр получил данные
+    //     let value = thermo.get_value().unwrap();
+    //     assert!(value.ends_with("°C"));
 
-//     #[test]
-//     fn thermo_get_value_ok() -> Result<()> {
-//         let mut thermo1 = Thermo {
-//             name: "NewThermometer".to_string(),
-//             value: 24.6,
-//             enabled: true,
-//         };
+    //     let temp_value = value.replace("°C", "").parse::<f32>().unwrap();
+    //     assert!(temp_value >= 15.0 && temp_value <= 30.0);
 
-//         assert_eq!(24.60, thermo1.get_value());
-//         let _ = thermo1.turn_off();
-//         assert_eq!(0.00, thermo1.get_value());
-//         Ok(())
-//     }
+    //     // 5. Проверяем статус
+    //     assert_eq!(thermo.get_status().unwrap(), "ON");
 
-//     #[test]
-//     fn thermo_display_ok() {
-//         let thermo = Thermo {
-//             name: "NewThermometer".to_string(),
-//             value: 24.6,
-//             enabled: true,
-//         };
-
-//         let output = thermo.get_report();
-//         let expected_output = "Thermo (name: NewThermometer, value: 24.60°C)";
-
-//         assert_eq!(output, expected_output);
-//     }
-// }
+    //     // 6. Проверяем выключение
+    //     thermo.turn_off().unwrap();
+    //     assert_eq!(thermo.get_status().unwrap(), "OFF");
+    //     assert_eq!(thermo.get_value().unwrap(), "0.00°C");
+    // }
+}
